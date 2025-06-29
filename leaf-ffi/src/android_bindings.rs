@@ -23,7 +23,7 @@ extern "C" {
 static mut RUNTIME_ID: u16 = 1234; // Or generate dynamically if needed
 
 #[no_mangle]
-pub extern "system" fn Java_com_yourpackage_LeafBridge_startLeaf(
+pub extern "system" fn Java_com_example_staysafe_webprotection_LeafBridge_startLeaf(
     mut env: JNIEnv,
     _class: JClass,
     jconfig_path: JString,
@@ -52,7 +52,7 @@ pub extern "system" fn Java_com_yourpackage_LeafBridge_startLeaf(
 }
 
 #[no_mangle]
-pub extern "system" fn Java_com_yourpackage_LeafBridge_shutdownLeaf(
+pub extern "system" fn Java_com_example_staysafe_webprotection_LeafBridge_shutdownLeaf(
     _env: JNIEnv,
     _class: JClass,
 ) -> bool {
