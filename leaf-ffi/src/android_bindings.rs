@@ -20,7 +20,9 @@ extern "C" {
     fn leaf_shutdown(rt_id: u16) -> bool;
 }
 
-static mut RUNTIME_ID: u16 = 1234; // Or generate dynamically if needed
+static mut RUNTIME_ID_CLIENT: u16 = 1; 
+static mut RUNTIME_ID_SERVER: u16 = 2; 
+
 
 #[no_mangle]
 pub extern "system" fn Java_com_example_staysafe_webprotection_LeafBridge_startLeaf(
@@ -40,9 +42,9 @@ pub extern "system" fn Java_com_example_staysafe_webprotection_LeafBridge_startL
 
     unsafe {
         leaf_run_with_options(
-            RUNTIME_ID,
+            RUNTIME_ID_CLIENT,
             config_c.as_ptr(),
-            false,     // auto_reload
+            true,     // auto_reload
             true,      // multi_thread
             true,      // auto_threads
             4,         // threads (ignored if auto_threads is true)
@@ -56,5 +58,42 @@ pub extern "system" fn Java_com_example_staysafe_webprotection_LeafBridge_shutdo
     _env: JNIEnv,
     _class: JClass,
 ) -> bool {
-    unsafe { leaf_shutdown(RUNTIME_ID) }
+    unsafe { leaf_shutdown(RUNTIME_ID_CLIENT) }
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_example_staysafe_webprotection_LeafBridge_startSocks5(
+    mut env: JNIEnv,
+    _class: JClass,
+    jconfig_path: JString,
+) -> i32 {
+    let config_path: String = match env.get_string(&jconfig_path) {
+        Ok(s) => s.into(),
+        Err(_) => return 1, // ERR_CONFIG_PATH
+    };
+
+    let config_c = match CString::new(config_path) {
+        Ok(c) => c,
+        Err(_) => return 1,
+    };
+
+    unsafe {
+        leaf_run_with_options(
+            RUNTIME_ID_SERVER,
+            config_c.as_ptr(),
+            false,
+            true,
+            true,
+            4,
+            1 * 1024 * 1024,
+        )
+    }
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_example_staysafe_webprotection_LeafBridge_shutdownSocks5(
+    _env: JNIEnv,
+    _class: JClass,
+) -> bool {
+    unsafe { leaf_shutdown(RUNTIME_ID_SERVER) }
 }

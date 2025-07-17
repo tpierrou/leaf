@@ -1,0 +1,34 @@
+            {
+            "log": {
+              "level": "debug",
+              "output": "/data/data/com.example.staysafe/files/leaf.log"
+            },
+              "dns": {
+                "servers": ["1.1.1.1", "8.8.8.8"]
+              },
+              "inbounds": [
+                {
+                  "protocol": "tun",
+                  "tag": "tun_in",
+                  "settings": {
+                    "fd": 345,
+                    "stack": "system",
+                    "address": "10.0.0.2",
+                    "gateway": "10.0.0.1",
+                    "mtu": 1500,
+                    "fakeDns": false,
+                    "includeRoutes": ["0.0.0.0/0", "::/0"]
+                  }
+                }
+              ],
+              "outbounds": [
+                {
+                  "protocol": "socks",
+                  "tag": "socks_out",
+                  "settings": {
+                    "address": "127.0.0.1",
+                    "port": 1080
+                  }
+                }
+              ]
+            }
