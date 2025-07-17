@@ -32,14 +32,10 @@ fn test_config() {
         ],
         "outbounds": [
             {
-              "protocol": "direct",
-              "tag": "direct"
-            },
-            {
-              "protocol": "block",
-              "tag": "block"
+                "protocol": "direct",
+                "tag": "direct_out"
             }
-          ],
+        ],
         "router": {
             "domainResolve": true,
             "rules": [
