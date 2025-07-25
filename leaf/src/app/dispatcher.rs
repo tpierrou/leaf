@@ -22,6 +22,8 @@ use crate::app::SyncStatManager;
 use super::outbound::manager::OutboundManager;
 use super::router::Router;
 
+use super::packet_stats::{PacketStats, STATS_FILE};
+
 #[inline]
 fn log_request(
     sess: &Session,
@@ -130,6 +132,7 @@ impl Dispatcher {
                         "picked route [{}] for {} -> {}",
                         tag, &sess.source, &sess.destination
                     );
+                    on_packet_analyzed();
                     tag.to_owned()
                 }
                 Err(err) => {
@@ -139,6 +142,7 @@ impl Dispatcher {
                             "picked default route [{}] for {} -> {}",
                             tag, &sess.source, &sess.destination
                         );
+                        on_packet_analyzed();
                         tag
                     } else {
                         warn!("can not find any handlers");
@@ -265,6 +269,7 @@ impl Dispatcher {
                         "picked route [{}] for {} -> {}",
                         tag, &sess.source, &sess.destination
                     );
+                    on_packet_analyzed();
                     tag.to_owned()
                 }
                 Err(err) => {
@@ -274,6 +279,7 @@ impl Dispatcher {
                             "picked default route [{}] for {} -> {}",
                             tag, &sess.source, &sess.destination
                         );
+                        on_packet_analyzed();
                         tag
                     } else {
                         warn!("no handler found");
@@ -333,3 +339,12 @@ impl Dispatcher {
         }
     }
 }
+
+pub fn on_packet_analyzed() {
+    let mut stats = PacketStats::load_or_default(STATS_FILE);
+    stats.increment_current_hour();
+    if let Err(e) = stats.save_atomically(STATS_FILE) {
+        eprintln!("Failed to save packet stats: {e}");
+    }
+}
+
