@@ -567,11 +567,10 @@ impl Router {
         use jni::JavaVM;
 
         if let Err(e) = (|| -> JniResult<()> {
-            // 1) Get saved JavaVM and attach
-            let vm: &JavaVM = get_saved_vm(); // <-- you already provide this from your shared crate
+            let vm: &JavaVM = get_saved_vm();
             let mut env = vm.attach_current_thread()?;
     
-            // 2) Get Application instance via ActivityThread.currentApplication()
+            // Get Application instance via ActivityThread.currentApplication()
             let activity_thread = env.find_class("android/app/ActivityThread")?;
             debug!("HEJ after findclass");
             let app_obj = env
@@ -581,9 +580,8 @@ impl Router {
                     "()Landroid/app/Application;",
                     &[],
                 )?
-                .l()?; // JObject (Application)
+                .l()?; 
     
-            // 3) Get the app ClassLoader
             let class_loader = env
                 .call_method(
                     app_obj,
@@ -591,9 +589,8 @@ impl Router {
                     "()Ljava/lang/ClassLoader;",
                     &[],
                 )?
-                .l()?; // JObject (ClassLoader)
+                .l()?;
     
-            // 4) Load your Kotlin class with that ClassLoader
             let class_name = env.new_string("com.example.staysafe.webprotection.JNIReceiver")?;
             let jni_receiver_class_obj = env
                 .call_method(
@@ -602,9 +599,8 @@ impl Router {
                     "(Ljava/lang/String;)Ljava/lang/Class;",
                     &[JValue::from(&class_name)],
                 )?
-                .l()?; // JObject (java.lang.Class)
+                .l()?; 
     
-            // 5) Call the static method: onPacketBlocked(String)
             let ip_java = env.new_string(ip)?;
             env.call_static_method(
                 JClass::from(jni_receiver_class_obj),
@@ -613,15 +609,13 @@ impl Router {
                 &[JValue::from(&ip_java)],
             )?;
     
-            // 6) Clean up any pending Java exceptions (defensive)
             if env.exception_check()? {
-                env.exception_describe()?; // prints to logcat
+                env.exception_describe()?;
                 env.exception_clear()?;
             }
     
             Ok(())
         })() {
-            // Best-effort logging if anything failed
             debug!("notify_blocked_packet JNI error: {:?}", e);
             // Try to describe any pending exception once more (thread may still have one)
             if let Ok(mut env) = get_saved_vm().attach_current_thread() {
@@ -632,69 +626,6 @@ impl Router {
             }
         }
     }
-    
-    /* fn notify_blocked_packet(ip: &str) {
-        use jni::JNIEnv;
-        use jni::objects::{JClass, JString};
-        use jni::sys::jstring;
-        use jni::JavaVM;
-    
-        // You must save JavaVM somewhere globally in Rust before calling this
-        debug!("HEJ before get_saved_vm");
-
-        let vm: &JavaVM = get_saved_vm(); // You must implement get_saved_vm()
-        debug!("HEJ before attach");
-
-        let mut env = vm.attach_current_thread().unwrap();
-        debug!("HEJ before unwrap");
-
-        let ip_java = env.new_string(ip).unwrap();
-        debug!("HEJ before call static method");
-
-        let class_loader = match env.call_static_method(
-            "com/example/staysafe/webprotection/ClassLoaderProvider",
-            "getAppClassLoader",
-            "()Ljava/lang/ClassLoader;",
-            &[],
-        ) {
-            Ok(val) => val.l().unwrap(),
-            Err(e) => {
-                debug!("Failed to get class loader: {:?}", e);
-                return;
-            }
-        };
-    
-        debug!("HEJ after class_loader");
-
-        let class_name = env.new_string("com.example.staysafe.webprotection.JNIReceiver").unwrap();
-    
-        let jni_receiver_class = match env.call_method(
-            class_loader,
-            "loadClass",
-            "(Ljava/lang/String;)Ljava/lang/Class;",
-            &[JValue::from(&class_name)],
-        ) {
-            Ok(val) => val.l().unwrap(),
-            Err(e) => {
-                debug!("Failed to load JNIReceiver: {:?}", e);
-                return;
-            }
-        };
-    
-        debug!("HEJ after jni_receiver_class");
-        
-
-        if let Err(e) = env.call_static_method(
-            JClass::from(jni_receiver_class),
-            "onPacketBlocked",
-            "(Ljava/lang/String;)V",
-            &[JValue::from(&ip_java)],
-        ) {
-            debug!("Failed to call onPacketBlocked: {:?}", e);
-        }        
-
-    } */
-    
 }
 
 #[cfg(test)]
