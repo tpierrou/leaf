@@ -1,7 +1,10 @@
 use jni::{
-    objects::{JClass, JString},
+    objects::{JClass, JString, GlobalRef, JObject},
     JNIEnv,
 };
+
+use jni::sys::jobject;
+use std::sync::Mutex;
 
 use std::ffi::CString;
 use std::os::raw::c_char;
@@ -57,4 +60,19 @@ pub extern "system" fn Java_com_example_staysafe_webprotection_LeafBridge_shutdo
     _class: JClass,
 ) -> bool {
     unsafe { leaf_shutdown(RUNTIME_ID_CLIENT) }
+}
+
+use std::sync::OnceLock;
+use jni::JavaVM;
+use leaf_jni_core::save_vm;
+use jni::sys::{jint, JNI_VERSION_1_6};
+
+
+static JVM: OnceLock<JavaVM> = OnceLock::new();
+
+
+#[no_mangle]
+pub extern "system" fn JNI_OnLoad(vm: JavaVM, _: *mut std::ffi::c_void) -> jint {
+    save_vm(vm);
+    JNI_VERSION_1_6
 }

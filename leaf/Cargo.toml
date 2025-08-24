@@ -134,6 +134,9 @@ auto-reload = ["notify"]
 ctrlc = ["tokio/signal"]
 
 [dependencies]
+
+leaf-jni-core = { path = "../leaf-jni-core" }
+
 # Common
 tokio = { version = "1", features = ["sync", "io-util", "net", "time", "rt", "rt-multi-thread"] }
 protobuf = "=3.6.0"

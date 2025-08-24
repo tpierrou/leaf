@@ -11,6 +11,7 @@ log = "0.4"
 bytes = "1.5"
 fern = "0.6"
 leaf = { path = "../leaf" }
+leaf-jni-core = { path = "../leaf-jni-core" }
 
 [lib]
 name = "leaf"
