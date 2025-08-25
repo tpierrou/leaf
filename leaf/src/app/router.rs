@@ -512,11 +512,7 @@ impl Router {
         for rule in &self.rules {
             if rule.apply(sess) {
                 if rule.target == "drop_out" {
-                    debug!("HEJ before extract ip");
-
                     if let Some(ip_str) = Self::extract_ip_address(&sess.destination) {
-                        debug!("HEJ ip {}", &ip_str);
-
                         Self::notify_blocked_packet(&ip_str);
                     }
                 }                
@@ -555,8 +551,6 @@ impl Router {
     }
 
     fn extract_ip_address(addr: &SocksAddr) -> Option<String> {
-        debug!("HEJ extract ip");
-
         match addr {
             SocksAddr::Ip(addr) => Some(addr.ip().to_string()),
             _ => None,
@@ -572,7 +566,6 @@ impl Router {
     
             // Get Application instance via ActivityThread.currentApplication()
             let activity_thread = env.find_class("android/app/ActivityThread")?;
-            debug!("HEJ after findclass");
             let app_obj = env
                 .call_static_method(
                     activity_thread,
