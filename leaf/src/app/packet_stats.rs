@@ -42,6 +42,15 @@ impl PacketStats {
         let mut tmp_file = File::create(&tmp_path)?;
         tmp_file.write_all(json.as_bytes())?;
         tmp_file.sync_all()?; // ensure flushed
+
+        let metadata = fs::metadata(&tmp_path)?;
+        if metadata.len() == 0 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Refusing to replace file with empty temp file",
+            ));
+        }
+
         fs::rename(&tmp_path, path)?; // atomic swap
         Ok(())
     }
