@@ -1,7 +1,6 @@
 use std::{ffi::CStr, os::raw::c_char};
 
-#[cfg(target_os = "android")]
-mod android_bindings;
+pub mod ios;
 
 /// No error.
 pub const ERR_OK: i32 = 0;

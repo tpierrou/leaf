@@ -1,42 +1,25 @@
 [package]
 name = "leaf-ffi"
 version = "0.1.0"
-authors = ["eycorsican <eric.y.corsican@gmail.com>"]
 edition = "2021"
-crate-type = ["cdylib"]
-
-[dependencies]
-jni = "0.21"
-log = "0.4"
-bytes = "1.5"
-fern = "0.6"
-leaf = { path = "../leaf" }
-leaf-jni-core = { path = "../leaf-jni-core" }
+authors = ["your name here"]
 
 [lib]
 name = "leaf"
 path = "src/lib.rs"
-crate-type = ["staticlib", "cdylib"]
+crate-type = ["staticlib"] 
+
+[dependencies]
+log = "0.4"
+bytes = "1.5"
+fern = "0.6"
+leaf = { path = "../leaf" }
 
 [features]
-default = [
-    "default-ring",
-]
+default = ["default-ring"]
 
-default-aws-lc= [
-    "leaf/default-aws-lc",
-]
-
-default-ring = [
-    "leaf/default-ring",
-]
-
-default-openssl = [
-    "leaf/default-openssl",
-]
-
-outbound-quic = [
-    "leaf/outbound-quic",
-]
-
-auto-reload = ["leaf/auto-reload"]
+default-aws-lc = ["leaf/default-aws-lc"]
+default-ring    = ["leaf/default-ring"]
+default-openssl = ["leaf/default-openssl"]
+outbound-quic   = ["leaf/outbound-quic"]
+auto-reload     = ["leaf/auto-reload"]
