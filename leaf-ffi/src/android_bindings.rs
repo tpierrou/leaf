@@ -2,12 +2,12 @@ use jni::{
     objects::{JClass, JString, GlobalRef, JObject},
     JNIEnv,
 };
-
 use jni::sys::jobject;
 use std::sync::Mutex;
-
 use std::ffi::CString;
 use std::os::raw::c_char;
+use std::os::raw::c_int;
+use libc::dup;
 
 extern "C" {
     fn leaf_run_with_options(
